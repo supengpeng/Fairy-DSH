@@ -20,23 +20,34 @@ for asset in runtime personality style canon behavior; do
 done
 
 # Keep the profile in the candidate repository while presenting it at the
-# location expected by the DSH CLI. The symlink makes package link: entries
-# resolve back to this repository, never to the production checkout.
+# location expected by the DSH CLI. The node helper mounts it with an absolute
+# target and re-aims the profile's link: dependencies the same way: on Windows
+# a relative junction target re-bases when reached through the mount, so the
+# POSIX `ln -s` form silently breaks plugin resolution there.
 mkdir -p "$DSH_HOME/profiles"
 if [ -e "$DSH_HOME/profiles/web" ] && [ ! -L "$DSH_HOME/profiles/web" ]; then
   mv "$DSH_HOME/profiles/web" "$DSH_HOME/profiles/web.previous.$$"
 fi
-if [ ! -L "$DSH_HOME/profiles/web" ]; then
-  ln -s "$repo_root/profiles/web" "$DSH_HOME/profiles/web"
-fi
+node "$repo_root/scripts/link-profile.mjs"
 
 echo "[1/3] package tests"
+if command -v pnpm >/dev/null 2>&1; then
+  # One root workspace install provides the dependency closure every linked
+  # plugin resolves from its real directory; profile-local node_modules cannot.
+  (cd "$repo_root" && pnpm install --frozen-lockfile --ignore-scripts)
+else
+  echo "pnpm is required for the workspace install" >&2
+  exit 1
+fi
 (cd "$repo_root/fairy-visual/dsh-fairy-visual" && npm test)
 (cd "$repo_root/fairy-voice/dsh-fairy-voice" && npm test)
 
 echo "[2/3] profile dependency check"
 if command -v pnpm >/dev/null 2>&1; then
   (cd "$repo_root/profiles/web" && pnpm install --frozen-lockfile --ignore-scripts)
+  # An install rewrites the link: entries with relative targets again; restore
+  # the absolute form before the smoke test boots through the mount.
+  node "$repo_root/scripts/link-profile.mjs"
 else
   echo "pnpm is required for profile installation" >&2
   exit 1

@@ -19,7 +19,13 @@ test('bundles the canonical client diagnostics dependency', async () => {
 });
 
 test('proxies the pinned Playwright server and captures browser mutations', () => {
-  assert.match(proxy, /profiles', 'web', 'node_modules', '\.bin', 'playwright-mcp'/);
+  // The package's JS entry runs under the current Node executable: a Windows
+  // .cmd shim cannot be spawned directly (EINVAL), and a shell invocation
+  // would re-quote every forwarded flag.
+  assert.match(proxy, /profiles', 'web', 'node_modules', '@playwright', 'mcp', 'cli\.js'/);
+  assert.match(proxy, /spawn\(process\.execPath, \[playwrightEntry, \.\.\.forwardedArgs\(\)\]/);
+  // Proxy-only flags configure this process and must not reach the child.
+  assert.match(proxy, /const PROXY_ONLY_FLAGS = \['--runtime-dir', '--playwright-bin'\]/);
   for (const action of ['browser_navigate', 'browser_click', 'browser_type', 'browser_fill_form', 'browser_tabs']) {
     assert.match(proxy, new RegExp(`'${action}'`));
   }

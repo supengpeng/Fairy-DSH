@@ -6,23 +6,54 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const readline = require('node:readline');
-const { createFairyDiagnostics } = require('dsh-fairy-contracts/client-diagnostics');
+// Launched through an absolute path into this repository (DSH_FAIRY_REPO_ROOT),
+// so it resolves the shared contracts package by path: the MCP host process has
+// no node_modules of its own to resolve a bare specifier against.
+const { createFairyDiagnostics } = require(path.join(__dirname, '..', '..', 'fairy-contracts', 'client-diagnostics.cjs'));
 const diagnostics = createFairyDiagnostics('dsh-browser-dock');
 
 process.on('uncaughtExceptionMonitor', (error, origin) => {
   diagnostics.error('proxy.top-level', error, { origin });
 });
 
+// The MCP host spawns this server with a filtered environment, so DSH_HOME
+// cannot be relied on: the launch path and the state directory are passed as
+// explicit arguments by the profile's cordis row, with the historical
+// DSH_HOME-derived defaults kept for direct invocations.
 const dshHome = process.env.DSH_HOME || path.join(os.homedir(), '.dsh');
-const runtimeDir = path.join(dshHome, 'browser-dock');
+
+/** Read the value following one `--flag` occurrence, or undefined when absent. */
+function flagValue(flag) {
+  const index = process.argv.indexOf(flag);
+  return index >= 0 ? process.argv[index + 1] : undefined;
+}
+
+/** argv minus the proxy-only flags and their values, for forwarding to playwright-mcp. */
+const PROXY_ONLY_FLAGS = ['--runtime-dir', '--playwright-bin'];
+function forwardedArgs() {
+  const forwarded = [];
+  for (let index = 2; index < process.argv.length; index += 1) {
+    if (PROXY_ONLY_FLAGS.includes(process.argv[index])) {
+      index += 1;
+      continue;
+    }
+    forwarded.push(process.argv[index]);
+  }
+  return forwarded;
+}
+
+const runtimeDir = flagValue('--runtime-dir') || path.join(dshHome, 'browser-dock');
 const stateFile = path.join(runtimeDir, 'state.json');
 const legacyFrameFile = path.join(runtimeDir, 'frame.jpg');
 const commandFile = path.join(runtimeDir, 'command.json');
 const commandFileName = path.basename(commandFile);
 const commandRescanMs = 5_000;
-const playwrightCommand = path.join(dshHome, 'profiles', 'web', 'node_modules', '.bin', 'playwright-mcp');
-const profileFlagIndex = process.argv.indexOf('--user-data-dir');
-const userDataDir = profileFlagIndex >= 0 ? process.argv[profileFlagIndex + 1] : path.join(dshHome, 'playwright-profile');
+// The package's JS entry, spawned under the current Node executable: a
+// Windows .cmd shim cannot be spawned directly (Node rejects it with EINVAL),
+// and a shell invocation would re-quote every forwarded flag.
+const playwrightEntry = flagValue('--playwright-bin')
+  || path.join(dshHome, 'profiles', 'web', 'node_modules', '@playwright', 'mcp', 'cli.js');
+const userDataDir = flagValue('--user-data-dir') || path.join(dshHome, 'playwright-profile');
 const captureActions = new Set([
   'browser_navigate', 'browser_navigate_back', 'browser_click', 'browser_type',
   'browser_fill_form', 'browser_press_key', 'browser_select_option', 'browser_drag',
@@ -306,7 +337,7 @@ function pollCommands() {
 removeRuntimeFiles();
 publish(inactiveState());
 
-const child = spawn(playwrightCommand, process.argv.slice(2), { stdio: ['pipe', 'pipe', 'pipe'] });
+const child = spawn(process.execPath, [playwrightEntry, ...forwardedArgs()], { stdio: ['pipe', 'pipe', 'pipe'] });
 child.stderr.pipe(process.stderr);
 
 const clientInput = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });

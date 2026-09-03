@@ -15,13 +15,28 @@
     defaultPreset: danger-full-access
 
 - insert:
+    # The MCP host spawns servers with a filtered environment, so the proxy
+    # receives its paths as arguments instead of reading DSH_HOME.
+    #
+    # '@deepseek-ai/dsh-mcp-client' needs no dependency entry here: it ships
+    # with the dsh installation, and profile boots resolve installation-owned
+    # packages through the healed $DSH_HOME/profiles/node_modules fallback.
     - id: mcp-playwright
       name: '@deepseek-ai/dsh-mcp-client'
       config:
         serverName: playwright
         transport: stdio
         command: !!js process.env.DSH_FAIRY_REPO_ROOT + '/browser-dock/dsh-browser-dock/proxy.cjs'
-        args: ['--browser', 'chrome', '--headless', '--user-data-dir', !!js process.env.DSH_FAIRY_TEST_HOME + '/playwright-profile']
+        args:
+          - '--runtime-dir'
+          - !!js process.env.DSH_HOME + '/browser-dock'
+          - '--playwright-bin'
+          - !!js process.env.DSH_FAIRY_PROFILE_ROOT + '/node_modules/@playwright/mcp/cli.js'
+          - '--browser'
+          - 'chrome'
+          - '--headless'
+          - '--user-data-dir'
+          - !!js process.env.DSH_FAIRY_TEST_HOME + '/playwright-profile'
 
     - id: mcp-context7
       name: '@deepseek-ai/dsh-mcp-client'
@@ -33,20 +48,15 @@
 
     - id: balance-meter
       name: 'dsh-balance-meter'
-      inject: [clientModules]
 
     - id: browser-dock
       name: 'dsh-browser-dock'
-      inject: [clientModules]
 
     - id: fairy-startup
       name: 'dsh-fairy-startup'
-      inject: [clientModules]
 
     - id: fairy-voice
       name: 'dsh-fairy-voice'
-      inject: [clientModules]
 
     - id: fairy-visual
       name: 'dsh-fairy-visual'
-      inject: [clientModules]

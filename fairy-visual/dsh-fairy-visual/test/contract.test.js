@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
-const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
+// A Windows checkout with core.autocrlf stores these sources with CRLF; the
+// assertions below describe the committed (LF) source contract, so reads are
+// normalized instead of each regex tolerating both line endings.
+const read = (path) => readFile(new URL(path, import.meta.url), 'utf8').then((text) => text.replace(/\r\n/g, '\n'));
 const [clientEntrySource, constantsSource, utilsSource, styleSource, composerDockSource, composerMarkerSource, composerMaterialSource, composerNativeSource, composerWorkspaceSource, composerResizeSource, composerInsetSource, composerSessionSource, composerAnchorSource, toBottomSource, adapterSource, lifecycleSource, controllerLifecycleSource, modeThemeSource, stageLifecycleSource, scrollbarSource, semanticMarkerSource, geometrySource, mascotSource, brandGeometrySource, powerModeSource, surfaceUtilsSource, visualTransitionsSource, serverSource, contractTypes] = await Promise.all([
   read('../src/client/index.js'),
   read('../src/client/constants.js'),
@@ -98,19 +101,14 @@ test('keeps identity settings on a cached bridge subscription', () => {
 });
 
 test('keeps module ownership boundaries and official slot declarations', () => {
-  assert.deepEqual(manifest.dsh.client.inject, [
-    '@deepseek-ai/dsh-client-runtime',
-    '@deepseek-ai/dsh-client-ui-slots',
-    '@deepseek-ai/dsh-client-ui-layout',
-    '@deepseek-ai/dsh-client-ui-sidebar',
-    '@deepseek-ai/dsh-client-ui-conversation',
-    '@deepseek-ai/dsh-client-ui-settings',
-    '@deepseek-ai/dsh-client-ui-primitives',
-  ]);
+  // Baseline externals (react, cordis, ui-slots, ui-primitives) are implicit
+  // for every dynamic bundle, and a feature plugin declares no inject or
+  // external edges — see packages/client/AGENTS.md.
+  assert.deepEqual(manifest.dsh.client, { platform: 'web' });
   assert.match(clientSource, /settings\.section/);
   assert.doesNotMatch(clientSource, /sessions\.clear\(\)|workspaces\.startSession\(\)|STARTUP_RESET_ATTR/);
   assert.doesNotMatch(source, /fairy-voice|127\.0\.0\.1:9880|agent\/pre-step/);
-  assert.match(serverSource, /settingsNamespace\(settingsNamespaceName\)/);
+  assert.match(serverSource, /settings\.register\(FAIRY_VISUAL_SETTINGS_NAMESPACE, FairyVisualSettings\)/);
   assert.match(contractTypes, /interface FairyVisualSettings/);
 });
 

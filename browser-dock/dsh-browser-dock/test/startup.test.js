@@ -26,7 +26,9 @@ async function waitFor(check, message, timeoutMs = 4000) {
 
 test('publishes the dock only after the first presentable frame is complete', async (t) => {
   const dshHome = await mkdtemp(join(tmpdir(), 'dsh-browser-dock-startup-'));
-  const playwright = join(dshHome, 'profiles', 'web', 'node_modules', '.bin', 'playwright-mcp');
+  // The proxy spawns the package's JS entry under the current Node
+  // executable, so the stub is a plain script at that resolved path.
+  const playwright = join(dshHome, 'profiles', 'web', 'node_modules', '@playwright', 'mcp', 'cli.js');
   const stateFile = join(dshHome, 'browser-dock', 'state.json');
   await mkdir(dirname(playwright), { recursive: true });
   await writeFile(playwright, `#!/usr/bin/env node

@@ -1,0 +1,4 @@
+# The plugin tests assert against the committed (LF) form of the sources, and
+# the browser bundle snapshots commit exact bytes; a Windows checkout must not
+# reflow either. Binary detection stays automatic.
+* text=auto eol=lf

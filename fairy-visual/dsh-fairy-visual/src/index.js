@@ -1,4 +1,3 @@
-import { settingsNamespace } from '@deepseek-ai/dsh-settings';
 import z from '@deepseek-ai/schemastery';
 import {
   FAIRY_IDENTITY_SETTINGS_NAMESPACE,
@@ -7,9 +6,6 @@ import {
 } from 'dsh-fairy-contracts';
 import { createFairyDiagnostics } from 'dsh-fairy-contracts/diagnostics';
 
-const settingsNamespaceName = FAIRY_VISUAL_SETTINGS_NAMESPACE;
-const FAIRY_VISUAL_SETTINGS = settingsNamespace(settingsNamespaceName);
-const FAIRY_IDENTITY_SETTINGS = settingsNamespace(FAIRY_IDENTITY_SETTINGS_NAMESPACE);
 const diagnostics = createFairyDiagnostics('dsh-fairy-visual');
 
 export const FairyVisualSettings = z.object({
@@ -35,8 +31,8 @@ export const name = 'dsh-fairy-visual';
 export function apply(ctx) {
   return diagnostics.guard('apply', () => {
     ctx.inject(['settings'], (settingsCtx) => {
-      settingsCtx.settings.register(FAIRY_VISUAL_SETTINGS, FairyVisualSettings);
-      settingsCtx.settings.register(FAIRY_IDENTITY_SETTINGS, FairyIdentitySettings);
+      settingsCtx.settings.register(FAIRY_VISUAL_SETTINGS_NAMESPACE, FairyVisualSettings);
+      settingsCtx.settings.register(FAIRY_IDENTITY_SETTINGS_NAMESPACE, FairyIdentitySettings);
     });
   }, { surface: 'host' });
 }

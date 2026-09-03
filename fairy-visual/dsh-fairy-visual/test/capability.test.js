@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const packageRoot = new URL('..', import.meta.url);
@@ -113,9 +114,12 @@ test('records and reports missing required capabilities after an explicit diagno
 
 test('keeps official data-slot and data-phase queries inside dom-adapter', () => {
   const directOfficialQuery = /querySelector(?:All)?\([^\n]*(?:data-slot|data-phase|data-composer|data-conversation-scroll|data-input-scroll|data-chat-flow)/;
+  // A URL pathname keeps its leading slash and percent escapes on Windows,
+  // which path.join turns into a bogus drive-relative path; fileURLToPath is
+  // the only correct bridge.
   const files = readdirSync(sourceRoot, { withFileTypes: true })
     .filter((entry) => entry.isFile() && entry.name.endsWith('.js') && entry.name !== 'dom-adapter.js')
-    .map((entry) => join(sourceRoot.pathname, entry.name));
+    .map((entry) => join(fileURLToPath(sourceRoot), entry.name));
 
   const offenders = files.filter((file) => directOfficialQuery.test(readFileSync(file, 'utf8')));
   assert.deepEqual(offenders, []);

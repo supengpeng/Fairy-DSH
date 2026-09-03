@@ -1,0 +1,16 @@
+{
+  "name": "fairy-dsh-root",
+  "private": true,
+  "type": "module",
+  "description": "Repository root install anchor. Node resolves a linked plugin's own imports from its real directory, so the runtime dependency closure has to be resolvable from here, not from the profile's node_modules.",
+  "scripts": {
+    "test": "node --test fairy-visual/dsh-fairy-visual/test/*.test.js fairy-voice/dsh-fairy-voice/test/*.test.js"
+  },
+  "dependencies": {
+    "dsh-fairy-contracts": "link:./fairy-contracts",
+    "@deepseek-ai/schemastery": "3.18.1",
+    "mdast-util-from-markdown": "2.0.3",
+    "mdast-util-gfm": "3.1.0",
+    "micromark-extension-gfm": "3.0.0"
+  }
+}

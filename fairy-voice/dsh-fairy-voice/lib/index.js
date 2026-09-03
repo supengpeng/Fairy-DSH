@@ -10,10 +10,14 @@ import { createLocalTtsTransport, createPcmStreamHandler } from './server/local-
 import { createVoiceBriefFallback, createVoiceBrainServerBoundary } from './server/voice-brief-fallback.js';
 import { createFairyDiagnostics } from 'dsh-fairy-contracts/diagnostics';
 
+// Same derivation as every other Fairy module: honor an isolated DSH_HOME
+// before falling back to the default harness home.
+const dshHome = process.env.DSH_HOME || join(homedir(), '.dsh');
+
 const LOCAL_TTS_URL = 'http://127.0.0.1:9880/tts';
 const LOCAL_DOCS_URL = 'http://127.0.0.1:9880/docs';
-const REFERENCE_AUDIO_PATH = join(homedir(), '.dsh', 'fairy-voice', 'runtime', 'reference', 'fairy_ref.wav');
-const REFERENCE_PROMPT_PATH = join(homedir(), '.dsh', 'fairy-voice', 'runtime', 'reference', 'fairy_ref.txt');
+const REFERENCE_AUDIO_PATH = join(dshHome, 'fairy-voice', 'runtime', 'reference', 'fairy_ref.wav');
+const REFERENCE_PROMPT_PATH = join(dshHome, 'fairy-voice', 'runtime', 'reference', 'fairy_ref.txt');
 const REFERENCE_PROMPT_FALLBACK = '根据用户协议，我无权回复该问题。主人将在合适的时间与合适的场合获知答案。';
 const diagnostics = createFairyDiagnostics('dsh-fairy-voice');
 
@@ -36,7 +40,7 @@ const MAX_VOICE_BRIEF_INPUT_LENGTH = 32_000;
 const MAX_VOICE_BRIEF_OUTPUT_LENGTH = 260;
 const DEEPSEEK_V4_FLASH_MODEL = 'deepseek-v4-flash';
 const DEEPSEEK_CHAT_COMPLETIONS_URL = 'https://api.deepseek.com/chat/completions';
-const VOICE_BRAIN_CONFIG_PATH = join(homedir(), '.dsh', 'fairy-voice', 'voice-brain.json');
+const VOICE_BRAIN_CONFIG_PATH = join(dshHome, 'fairy-voice', 'voice-brain.json');
 function safeText(value) {
   return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
 }

@@ -4,8 +4,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
-const script = new URL('../accepted-baseline.js', import.meta.url).pathname;
+// URL pathname keeps its leading slash on Windows, which Node cannot spawn.
+const script = fileURLToPath(new URL('../accepted-baseline.js', import.meta.url));
 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'dsh-accepted-baseline-test-'));

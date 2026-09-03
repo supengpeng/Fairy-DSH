@@ -1,0 +1,10 @@
+packages:
+  - fairy-contracts
+  - balance-meter/*
+  - browser-dock/*
+  - fairy-startup/*
+  - fairy-visual/*
+  - fairy-voice/*
+
+nodeLinker: hoisted
+autoInstallPeers: false

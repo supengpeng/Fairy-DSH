@@ -17,15 +17,19 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: |
+            pnpm-lock.yaml
             profiles/web/pnpm-lock.yaml
-            fairy-visual/dsh-fairy-visual/pnpm-lock.yaml
-            fairy-voice/dsh-fairy-voice/pnpm-lock.yaml
-            fairy-startup/dsh-fairy-startup/pnpm-lock.yaml
-            browser-dock/dsh-browser-dock/pnpm-lock.yaml
-            balance-meter/dsh-balance-meter/pnpm-lock.yaml
-      - name: Install and test visual
+      # One root workspace install: every linked plugin resolves its own
+      # dependencies from its real directory, which only the repo root
+      # node_modules can satisfy.
+      - name: Install workspace
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Install profile dependencies
+        working-directory: profiles/web
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Test visual
         working-directory: fairy-visual/dsh-fairy-visual
-        run: pnpm install --frozen-lockfile --ignore-scripts && pnpm test
-      - name: Install and test voice
+        run: pnpm test
+      - name: Test voice
         working-directory: fairy-voice/dsh-fairy-voice
-        run: pnpm install --frozen-lockfile --ignore-scripts && pnpm test
+        run: pnpm test

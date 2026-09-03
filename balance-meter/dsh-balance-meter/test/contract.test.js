@@ -3,10 +3,15 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import vm from 'node:vm';
 
-const server = await readFile(new URL('../lib/index.js', import.meta.url), 'utf8');
-const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
-const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
-const canonicalClientDiagnostics = await readFile(new URL('../../../fairy-contracts/client-diagnostics.cjs', import.meta.url), 'utf8');
+// A Windows checkout with core.autocrlf stores these sources with CRLF; the
+// embedded-contract markers and source regexes describe the committed (LF)
+// form, so reads are normalized instead of each assertion tolerating both.
+const read = (path) => readFile(new URL(path, import.meta.url), 'utf8').then((text) => text.replace(/\r\n/g, '\n'));
+
+const server = await read('../lib/index.js');
+const client = await read('../lib/client.js');
+const manifest = JSON.parse(await read('../package.json'));
+const canonicalClientDiagnostics = await read('../../../fairy-contracts/client-diagnostics.cjs');
 
 function embeddedClientDiagnostics(value) {
   const begin = '// DSH_FAIRY_CLIENT_DIAGNOSTICS_BEGIN\n';
