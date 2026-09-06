@@ -79,6 +79,17 @@ fairy-voice|browser-dock 全部用例 + fairy-system test 中非环境耦合用�
 实机 DOM 审计结果将决定保留、降级或删除；如实机确认缺失，相关视觉能力按
 "degraded"处理，不阻塞其余功能。
 
+## 实机验证状态（2026-09-06 最终）
+
+- 官方 `@deepseek-ai/dsh@0.1.3-alpha.1` 未发布到 npm（最新 `0.1.2-rc.1`）；
+  沙箱内以官方源码（dsh-0.1.3-alpha.1 checkout）直启隔离实例成功：
+  `dsh web: http://127.0.0.1:39123`（DSH_HOME 隔离 profile，bundles
+  `@deepseek-ai/dsh-base` + `@deepseek-ai/dsh-web-app`），证明该版本源码可启动。
+- 用户决策：**停止沙箱内浏览器 DOM 审计**，仅保留验收清单。因此上文"待实机
+  确认的 DOM 锚点"没有浏览器结论——在真实机器完成清单前，不得宣称"能在
+  dsh-0.1.3-alpha.1 上运行"。
+- 残余环境（`.dsh-test-home`、无头 Edge、临时令牌文件）已清理，未入库。
+
 ## 待办（不属本次伪造范围）
 
 1. 隔离 profile + 隔离 runtime 验收 0.1.3-alpha.1 候选，取得官方 SHA-256；
