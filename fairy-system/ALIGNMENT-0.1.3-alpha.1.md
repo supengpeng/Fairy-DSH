@@ -98,3 +98,25 @@ fairy-voice|browser-dock 全部用例 + fairy-system test 中非环境耦合用�
 3. 按 `BROWSER-EVIDENCE-MATRIX.md` 补齐 11 项浏览器证据；
 4. 重新审查第三方 `dsh-reasoning-effort`/`dsh-message-edit` 锁与补丁对
    0.1.3-alpha.1 的兼容性（本仓库锁定未动）。
+
+## 实机安装记录（2026-09-06，live web profile）
+
+目标目录 `C:\Users\spp\.dsh\profiles\web\plugins\fairy-dsh\`（与 dsh-routing-suite
+并列的套件目录约定），安装方式 = 复制 lib/package.json + `dev_install_package`
+（bundles 装配双路径一致：热装配立即生效 + 重启后由 bundles 列表装配）。
+
+- 已装：`dsh-balance-meter`、`dsh-browser-dock`、`dsh-fairy-startup`、
+  `dsh-fairy-voice`、`dsh-fairy-visual`（plugins/fairy-dsh/<pkg>），共享依赖
+  `dsh-fairy-contracts`（plugins/fairy-dsh/contracts，junction 进 profile
+  node_modules，`file:` 依赖入 manifest）。
+- profile `package.json`：bundles 追加 5 个 Fairy 包；dependencies 追加
+  `link:`（指向 plugins 副本）+ `@deepseek-ai/schemastery@3.18.1` +
+  voice 三个 mdast/micromark 固定版本（registry 安装，锁文件已更新）。
+- `cordis.patch.yml` 恢复为 `[]`（清除 dev_uninject 写入的 disabled 条目，
+  避免重启后屏蔽 balance）。
+- loader 状态：五个插件 host fiber 均 `[active]`、client 均注册成功
+  （install 5✓/0✗，self-heal 无审计故障）。
+- 备份：`C:\Users\spp\.dsh\profiles\web\.backup-20260906-123225\`。
+- 已知未完成项：browser-dock 的 MCP insert（mcp-playwright）未装配 → Dock
+  处于 idle；Fairy 私有语料/preset（.agent-presets/fairy/runtime 等）未装；
+  visual 锚点疑点仍需刷新 GUI 页面后观察（见上节清单）。
