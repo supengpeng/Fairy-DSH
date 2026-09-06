@@ -18,8 +18,10 @@ const desktopLauncherSource = await optionalFile('../../dsh-web-launcher.m');
 const desktopLauncherAppleScript = await optionalFile('../../dsh-web-launcher.applescript');
 
 test('keeps cross-module verification static, deterministic, and runtime-pinned', () => {
-  assert.match(verify, /EXPECTED_RUNTIME_SHA256 = '13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679'/);
+  assert.match(verify, /EXPECTED_RUNTIME_SHA256 = null/);
+  assert.match(verify, /pending an isolated candidate acceptance/);
   assert.match(verify, /assert\(hash === EXPECTED_RUNTIME_SHA256/);
+  assert.match(verify, /officialPackage\.name === '@deepseek-ai\/dsh' && officialPackage\.version === '0\.1\.3-alpha\.1'/);
   assert.doesNotMatch(verify, /execFileSync|function runNode/);
   assert.doesNotMatch(verify, /#3b4148|#d9dde1|#343a42|#e1e4e8/);
   assert.match(verify, /dependencies\?\.\['dsh-message-edit'\] === '0\.2\.3'/);

@@ -12,8 +12,11 @@ const dshHome = join(homedir(), '.dsh');
 const currentProfile = join(dshHome, 'profiles', 'web');
 const currentRuntime = join(homedir(), '.local', 'lib', 'node_modules', '@deepseek-ai', 'dsh', 'node_modules', '@deepseek-ai', 'dsh-client-runtime', 'lib', 'client.js');
 const currentRuntimePackage = join(currentRuntime, '..', '..', 'package.json');
-const expectedHash = '13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679';
-const expectedVersion = '0.1.1-rc.2';
+// dsh-0.1.3-alpha.1 target state. The runtime SHA-256 placeholder is replaced
+// with the accepted candidate hash during isolated acceptance; until then the
+// success-path tests fail closed by design (see UPGRADE_COMPATIBILITY.md).
+const expectedHash = 'PENDING-ACCEPTANCE-SHA256';
+const expectedVersion = '0.1.3-alpha.1';
 
 function run(args, env = {}) {
   // URL pathname keeps its leading slash on Windows, which Node cannot spawn.
@@ -68,7 +71,7 @@ test('reports the reviewed dependency matrix without writing the active profile'
   const result = run(['--report']);
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /DSH upgrade compatibility matrix/);
-  assert.match(result.stdout, /@deepseek-ai\/dsh-settings 0\.1\.1-rc\.2/);
+  assert.match(result.stdout, /@deepseek-ai\/dsh-settings 0\.1\.3-alpha\.1/);
   assert.match(result.stdout, /dsh-reasoning-effort: 0\.6\.2/);
   assert.match(result.stdout, /dsh-message-edit: 0\.2\.3/);
   assert.match(result.stdout, /MutableChatNodeStore; node kinds user\/assistant-step; Visual activity normal\/thinking\/comforting/);

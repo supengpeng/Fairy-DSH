@@ -66,9 +66,10 @@ module.exports = { FAIRY_LOG_PREFIX, createFairyDiagnostics };
       const startWhenReady = () => {
         const snapshot = workspaces.list.getSnapshot();
         if (started || !snapshot.baselinesReady) return false;
-        // rc.2+ keeps an empty workspace selection as a valid state. Calling
-        // startSession() without a target re-enters the official session
-        // projection synchronously, so leave the native new-session view alone.
+        // DSH 0.1.3-alpha.1 keeps an empty workspace selection as a valid
+        // state. Calling startSession() without a target re-enters the
+        // official session projection synchronously, so leave the native
+        // new-session view alone.
         if (snapshot.recentWorkspaceId !== undefined) {
           try {
             workspaces.startSession();

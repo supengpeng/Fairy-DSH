@@ -34,7 +34,7 @@ function fixture(model, reasoning) {
   return { querySelector(selector) { return nodes.get(selector) || null; } };
 }
 
-test('rc.2 merged control is recognized as one official node', () => {
+test('dsh-0.1.3-alpha.1 merged control is recognized as one official node', () => {
   const merged = {};
   assert.equal(modelAndReasoningShareNode(fixture(merged, merged)), true);
 });

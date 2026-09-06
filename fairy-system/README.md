@@ -2,16 +2,22 @@
 
 本目录只负责当前 live workspace 的验证、升级预检和浏览器证据边界。工程规则在 `../AI_PROJECT_RULES.md`，架构在 `../ARCHITECTURE.md`，短运行摘要在 `../DSH-HANDOFF.md`。
 
-## 当前批准边界
+## 当前目标边界（dsh-0.1.3-alpha.1，验收待定）
 
 | 项 | 值 |
 | --- | --- |
 | Canonical custom source | 当前仓库 checkout |
-| DSH | `0.1.1-rc.2` |
-| 官方 browser runtime SHA-256 | `13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679` |
-| Visual settings package | `@deepseek-ai/dsh-settings@0.1.1-rc.2` |
-| Capability matrix | `capability-matrix.json` |
+| DSH（目标版本） | `0.1.3-alpha.1` |
+| 官方 browser runtime SHA-256 | 待隔离候选验收（不沿用 rc.2 的 `13a5fe…6679`） |
+| Visual settings package | `@deepseek-ai/dsh-settings@0.1.3-alpha.1`（目标） |
+| Capability matrix | `capability-matrix.json`（matrixId `dsh-0.1.3-alpha.1`） |
 | Browser acceptance matrix | `BROWSER-EVIDENCE-MATRIX.md` |
+
+> 代码与契约已按官方 0.1.3-alpha.1 源码对齐；官方运行时 SHA-256 与浏览器证据
+> 仍是待验收项（隔离候选 + 验收流程见 `UPGRADE_COMPATIBILITY.md`）。验收完成前，
+> `verify.js`/`preflight-build.js` 会按 fail-closed 拒绝启动，不得回填旧的 rc.2
+> 哈希冒充批准。历史批准基线 `0.1.1-rc.2`（SHA-256 `13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679`）
+> 仅作审计轨迹保留。
 
 官方 runtime 是只读边界。任何 hash、版本、selector、slot、ARIA、Session 或 Workspace contract 变动都必须按升级流程审查，不得直接改官方生成文件。
 
@@ -106,8 +112,8 @@ safari-hdd-transition-svg-integrity
 ./fairy-system/upgrade-candidate-preflight.sh \
   --profile /absolute/isolated/profile \
   --runtime /absolute/isolated/runtime/lib/client.js \
-  --expected-version 0.1.1-rc.2 \
-  --expected-sha256 13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679
+  --expected-version 0.1.3-alpha.1 \
+  --expected-sha256 <ACCEPTED_SHA256>
 ```
 
 该预检只读：检查官方 runtime、ClientModuleRegistry、Browser ModuleLoader、package exports、profile inject order、DOM/slot/ARIA、settings、session/workspace 与依赖 pin；失败时输出兼容性报告，不会修改 active profile 或官方 runtime。

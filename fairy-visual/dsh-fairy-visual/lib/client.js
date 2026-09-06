@@ -544,8 +544,8 @@ html[data-dsh-fairy-visual],html[data-dsh-fairy-visual] body{color-scheme:dark}h
 				en: Object.freeze(["Select model"])
 			}),
 			reasoning: Object.freeze({
-				zh: Object.freeze(["模型 "]),
-				en: Object.freeze(["Model "])
+				zh: Object.freeze(["选择模型"]),
+				en: Object.freeze(["Select model"])
 			}),
 			workspace: Object.freeze({
 				zh: Object.freeze(["选择工作区"]),

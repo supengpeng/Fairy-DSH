@@ -12,7 +12,9 @@ const os = require('os');
 const path = require('path');
 
 const dshRoot = process.env.DSH_HOME || path.join(os.homedir(), '.dsh');
-const EXPECTED_RUNTIME_SHA256 = '13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679';
+// dsh-0.1.3-alpha.1 is the source-aligned target; its runtime SHA-256 awaits
+// an isolated candidate acceptance and must not reuse the rc.2-era hash.
+const EXPECTED_RUNTIME_SHA256 = null;
 const paths = {
   balance: path.join(dshRoot, 'balance-meter', 'dsh-balance-meter'),
   browserDock: path.join(dshRoot, 'browser-dock', 'dsh-browser-dock'),
@@ -75,7 +77,7 @@ function verifyRuntimeBoundaries() {
   assert(read(paths.installedVoiceLaunchAgent) === canonicalVoiceLaunchAgent, 'installed Voice LaunchAgent drifted from its canonical .dsh source');
 
   const officialPackage = JSON.parse(read(paths.officialDshPackage));
-  assert(officialPackage.name === '@deepseek-ai/dsh' && officialPackage.version === '0.1.1-rc.2', 'official DSH dependency version drifted');
+  assert(officialPackage.name === '@deepseek-ai/dsh' && officialPackage.version === '0.1.3-alpha.1', 'official DSH dependency version drifted from the 0.1.3-alpha.1 target');
 }
 
 function verifyPublishedArtifacts() {
@@ -384,6 +386,9 @@ function verifyCleanRuntime() {
   const runtime = read(paths.runtime);
   const hash = crypto.createHash('sha256').update(runtime).digest('hex');
   assert(!runtime.includes('__dshFairyMascot') && !runtime.includes('dsh-hdd'), 'legacy compiled-runtime visual injection is still installed');
+  if (!EXPECTED_RUNTIME_SHA256) {
+    fail('official runtime for 0.1.3-alpha.1 is not accepted yet; its SHA-256 is pending an isolated candidate acceptance (see UPGRADE_COMPATIBILITY.md)');
+  }
   assert(hash === EXPECTED_RUNTIME_SHA256, `official runtime hash drifted (${hash})`);
   return hash;
 }

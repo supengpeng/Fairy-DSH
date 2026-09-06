@@ -14,8 +14,12 @@ const DEFAULT_OFFICIAL_DSH_PACKAGE = path.join(os.homedir(), '.local/lib/node_mo
 const DEFAULT_OFFICIAL_RUNTIME = path.join(os.homedir(), '.local/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-client-runtime/lib/client.js');
 
 const APPROVED = Object.freeze({
-  dshVersion: '0.1.1-rc.2',
-  runtimeSha256: '13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679',
+  // dsh-0.1.3-alpha.1 is the source-aligned target. The runtime SHA-256 is not
+  // approved yet: it must come from an isolated candidate acceptance (see
+  // fairy-system/UPGRADE_COMPATIBILITY.md), never from the rc.2-era artifact.
+  dshVersion: '0.1.3-alpha.1',
+  runtimeSha256: null,
+  runtimeApproval: 'pending-isolated-candidate-acceptance',
   locks: Object.freeze({
     'dsh-message-edit': Object.freeze({
       version: '0.2.3',
@@ -272,11 +276,21 @@ function verifyCore(config) {
     action: 'Restore the approved official browser runtime manually before launching DSH.',
   });
   const runtimeSha256 = hashFile(config.runtimePath, 'sha256');
-  if (runtimeSha256 !== config.approved.runtimeSha256) {
+  const approvedSha = config.approved.runtimeSha256;
+  if (!approvedSha) {
     fail({
       scope: 'official_runtime',
       file: config.runtimePath,
-      expected: config.approved.runtimeSha256,
+      expected: `approved SHA-256 for DSH ${config.approved.dshVersion}`,
+      actual: 'approval pending: isolated candidate acceptance required',
+      action: 'Run fairy-system/upgrade-candidate-preflight.sh against an isolated 0.1.3-alpha.1 candidate and record its accepted SHA-256 here before launching DSH.',
+    });
+  }
+  if (runtimeSha256 !== approvedSha) {
+    fail({
+      scope: 'official_runtime',
+      file: config.runtimePath,
+      expected: approvedSha,
       actual: runtimeSha256,
       action: 'Inspect the installed official runtime manually and restore the approved artifact; preflight will not modify it.',
     });

@@ -1,8 +1,10 @@
 {
   "schemaVersion": 1,
-  "matrixId": "dsh-0.1.1-rc.2",
-  "dshVersion": "0.1.1-rc.2",
-  "officialRuntimeSha256": "13a5fe0ee8cddda2306d302eb0dbfdd601e96d14baeb512867b4b6d1d72f6679",
+  "matrixId": "dsh-0.1.3-alpha.1",
+  "dshVersion": "0.1.3-alpha.1",
+  "officialRuntimeSha256": null,
+  "officialRuntimeApproval": "pending-isolated-candidate-acceptance",
+  "officialRuntimeApprovalNote": "Source alignment to dsh-0.1.3-alpha.1 is complete; the official runtime SHA-256 and the browser evidence matrix await an isolated candidate acceptance before this entry may be approved (see UPGRADE_COMPATIBILITY.md).",
   "dom": {
     "rootSlot": "body > #root > [data-slot=\"root\"]",
     "rootSurface": "[data-slot=\"root\"]",
@@ -38,7 +40,7 @@
     "command": "button[aria-label=\"命令\"],button[aria-label=\"Commands\"],button[aria-label=\"Command\"]",
     "access": "button[aria-label^=\"访问模式\"],button[aria-label^=\"Access mode\"]",
     "model": "select[aria-label^=\"选择模型\"],select[aria-label^=\"Select model\"],button[aria-label^=\"选择模型\"],button[aria-label^=\"Select model\"]",
-    "reasoning": "button[aria-label^=\"模型 \"][aria-haspopup=\"menu\"],button[aria-label^=\"Model \"][aria-haspopup=\"menu\"]",
+    "reasoning": "button[aria-label^=\"选择模型\"][aria-haspopup=\"menu\"],button[aria-label^=\"Select model\"][aria-haspopup=\"menu\"]",
     "workspace": "button[aria-label=\"选择工作区\"],button[aria-label=\"Choose workspace\"]",
     "balance": "[data-slot=\"sidebar.footer.action\"] *[aria-label^=\"DeepSeek 余额\"],[data-slot=\"sidebar.footer.action\"] *[aria-label^=\"DeepSeek balance\"]",
     "undo": "button[aria-label=\"撤销当前版本效果\"],button[aria-label=\"Undo current version effect\"]",
@@ -187,16 +189,22 @@
     "externalTakeover": "revision-bound, one-shot, only after login or CAPTCHA detection"
   },
   "officialDependencies": {
-    "@deepseek-ai/dsh-settings": "0.1.1-rc.2",
-    "@deepseek-ai/dsh-client-runtime": "0.1.1-rc.2",
-    "@deepseek-ai/dsh-client-ui-conversation": "0.1.1-rc.2",
-    "@deepseek-ai/dsh-client-ui-layout": "0.1.1-rc.2",
-    "@deepseek-ai/dsh-client-ui-sidebar": "0.1.1-rc.2",
-    "@deepseek-ai/dsh-brand": "0.1.1-rc.2",
-    "@deepseek-ai/dsh-invariants": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-settings": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-client-ui-conversation": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-client-ui-layout": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-client-ui-sidebar": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-client-ui-model-selection": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-client-ui-settings": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-client-ui-slots": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-client-connection": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-api-remotes": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-brand": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-invariants": "0.1.3-alpha.1",
+    "@deepseek-ai/dsh-client-runtime": "0.1.3-alpha.1",
     "@deepseek-ai/cordis": "4.0.1",
     "@deepseek-ai/schemastery": "3.18.1"
   },
+  "officialDependenciesNote": "Versions are source-aligned targets from the dsh-0.1.3-alpha.1 official monorepo. The installed-tree reconciliation (including whether the browser runtime entry still ships as @deepseek-ai/dsh-client-runtime/lib/client.js) is part of the pending isolated candidate acceptance.",
   "browserEvidence": {
     "requiredCases": [
       "normal-light-new-session",
@@ -212,6 +220,6 @@
       "console-errors-and-warnings"
     ],
     "evidenceDirectory": "fairy-system/browser-evidence",
-    "upgradeRule": "Do not approve a new DSH runtime until every required case has a dated evidence record or an explicit reviewed exception."
+    "upgradeRule": "Do not approve the dsh-0.1.3-alpha.1 runtime until every required case has a dated evidence record or an explicit reviewed exception."
   }
 }

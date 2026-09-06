@@ -19,7 +19,10 @@ const LOCAL_PACKAGES = [
 ];
 const DEFAULT_PROFILE = path.join(os.homedir(), '.dsh', 'profiles', 'web');
 const DEFAULT_RUNTIME = path.join(os.homedir(), '.local', 'lib', 'node_modules', '@deepseek-ai', 'dsh', 'node_modules', '@deepseek-ai', 'dsh-client-runtime', 'lib', 'client.js');
-const VISUAL_SETTINGS_VERSION = '0.1.1-rc.2';
+// dsh-0.1.3-alpha.1 source-aligned target. The resolved installed-tree
+// version is reconciled during the isolated candidate acceptance; do not
+// restore the rc.2-era pin.
+const VISUAL_SETTINGS_VERSION = '0.1.3-alpha.1';
 const REASONING_VERSION = '0.6.2';
 const REASONING_SOURCE = 'github:HanaAyane/dsh-reasoning-effort#main';
 const REASONING_LOCK_SOURCE = 'https://codeload.github.com/HanaAyane/dsh-reasoning-effort/tar.gz/83bc8c548749d7156a03d11d875d8117e9b5d994';

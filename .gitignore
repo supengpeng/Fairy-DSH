@@ -12,3 +12,6 @@ playwright-profile/
 world-core/
 browser-evidence/
 benchmarks/
+
+# pnpm v11 may place its content-addressable store under the workspace root
+.pnpm-store/

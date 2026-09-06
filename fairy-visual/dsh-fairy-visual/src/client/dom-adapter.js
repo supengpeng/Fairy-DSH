@@ -16,11 +16,12 @@ const OFFICIAL_SLOT_VALUES = Object.freeze({
 
 const VOICE_CONTROL_FALLBACK_SELECTOR = '[aria-label="Fairy 朗读控制"],input[aria-label="朗读音量"]';
 
-// Verified against the installed DSH 0.1.1-rc.2 zh/en dictionaries.  The
-// adapter intentionally queries the exact union of shipped labels instead of
-// choosing one from browser or document language: a live Host locale update
-// can briefly lag document.lang, while an exact union remains safe and works
-// immediately on both sides of the update.
+// Verified against the DSH 0.1.3-alpha.1 zh/en locale dictionaries (official
+// source: ui-sidebar, ui-conversation, ui-workspace, ui-chat and
+// ui-model-selection).  The adapter intentionally queries the exact union of
+// shipped labels instead of choosing one from browser or document language: a
+// live Host locale update can briefly lag document.lang, while an exact union
+// remains safe and works immediately on both sides of the update.
 const ARIA_LABELS = Object.freeze({
   sessionTree: Object.freeze({ zh: Object.freeze(['会话']), en: Object.freeze(['Sessions']) }),
   newSession: Object.freeze({ zh: Object.freeze(['新建会话']), en: Object.freeze(['New session', 'New Session']) }),
@@ -32,7 +33,11 @@ const ARIA_LABELS = Object.freeze({
   command: Object.freeze({ zh: Object.freeze(['命令']), en: Object.freeze(['Commands', 'Command']) }),
   access: Object.freeze({ zh: Object.freeze(['访问模式']), en: Object.freeze(['Access mode']) }),
   model: Object.freeze({ zh: Object.freeze(['选择模型']), en: Object.freeze(['Select model']) }),
-  reasoning: Object.freeze({ zh: Object.freeze(['模型 ']), en: Object.freeze(['Model ']) }),
+  // 0.1.3-alpha.1 merges model and reasoning-effort into one composer popup
+  // trigger labelled '选择模型，当前 {model}' / 'Select model, current {model}'.
+  // The shared prefix keeps the fallback ('选择模型'/'Select model') and the
+  // populated trigger on one selectable union.
+  reasoning: Object.freeze({ zh: Object.freeze(['选择模型']), en: Object.freeze(['Select model']) }),
   workspace: Object.freeze({ zh: Object.freeze(['选择工作区']), en: Object.freeze(['Choose workspace']) }),
   // Balance and edit controls are local/third-party additions, but keeping
   // their labels here prevents their language behavior from diverging from the
@@ -314,9 +319,10 @@ function sessionItems(scope) { return officialNodes('sessionItem', scope); }
 function expandedSessionItems(scope) { return officialNodes('expandedSessionItem', scope); }
 function selectedSessionItems(scope) { return officialNodes('selectedSessionItem', scope); }
 function newSessionButtons(scope) { return officialNodes('newSession', scope); }
-// rc.2 exposes the official brand through a public slot. Keep the legacy
-// direct-SVG fallback for older runtimes, but prefer the explicit capability
-// whenever it exists so the real new-session control is never hidden.
+// The current runtime exposes the official brand through a public slot
+// ([data-slot="sidebar.brand.mark"]). Keep the legacy direct-SVG fallback for
+// runtimes predating that slot, but prefer the explicit capability whenever it
+// exists so the real new-session control is never hidden.
 function sidebarBrandButton(scope = document) {
   const mark = officialNode('sidebarBrandMark', scope);
   const explicit = mark?.closest?.(OFFICIAL_NODE_CONTRACTS.newSession.selector);
