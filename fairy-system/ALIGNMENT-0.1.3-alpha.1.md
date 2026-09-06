@@ -53,6 +53,32 @@ fairy-voice|browser-dock 全部用例 + fairy-system test 中非环境耦合用�
   lib bundles/startup client 全部 0 退出；matrix JSON 可解析；adapter
   `OFFICIAL_SELECTORS.reasoning/model` 与 matrix `dom.reasoning/model` 逐字一致。
 
+## 待实机确认的 DOM 锚点（2026-09-06 复核新增）
+
+静态（源码）核验不足以证明这些锚点在真实 DOM 中存在/可解析，须在
+0.1.3-alpha.1 实机浏览器中逐条确认；确认前不得宣称"能运行"：
+
+1. `[data-slot="conversation.session.header.actions"]` /
+   `[data-slot="conversation.session.header.utilities"]`：0.1.3-alpha.1 中
+   这两个座位为 `list` 型，`ConversationSessionHeader` 把条目直接渲染进
+   CSS-class 容器（`css.headerActions`/`css.headerUtilities`），未见
+   `data-slot` 包裹属性 —— Fairy composer-dock 定位与 agent-preset 标签
+   锚点依赖此选择器，缺失时相关功能会静默降级。
+2. `[data-slot="sidebar.footer.action"]`（list 型）与
+   `[data-slot="sidebar.settings"]`：sidebar 快照中曾出现该属性，但
+   `SidebarRoot` 源码同样是 class 容器 + 裸渲染条目，需实机确认属性来源
+   （条目自身根节点或渲染器锚点）。
+3. `[data-slot="conversation.composer.dock"]`（list 型，ui-chat stats 注入）：
+   同上，list 座位疑似无 `data-slot` 包裹。
+4. `[data-slot="conversation.input.attachments"]`（single 型）与
+   `[data-role="dialog"]` 系列：渲染器对 single 座位输出锚点，需实机抽查。
+5. 旧 `reasoning` 触发器（`模型 ` 前缀）是否已从 composer 完全移除、新
+   `选择模型，当前 …` 触发器在真实 composer 中是否存在。
+
+结论：capability-matrix/dom-adapter 中上述行目前仍是 rc.2 时代的静态声明，
+实机 DOM 审计结果将决定保留、降级或删除；如实机确认缺失，相关视觉能力按
+"degraded"处理，不阻塞其余功能。
+
 ## 待办（不属本次伪造范围）
 
 1. 隔离 profile + 隔离 runtime 验收 0.1.3-alpha.1 候选，取得官方 SHA-256；
